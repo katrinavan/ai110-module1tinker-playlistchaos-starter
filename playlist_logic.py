@@ -71,7 +71,7 @@ def classify_song(song: Song, profile: Dict[str, object]) -> str:
     chill_keywords = ["lofi", "ambient", "sleep"]
 
     is_hype_keyword = any(k in genre for k in hype_keywords)
-    is_chill_keyword = any(k in genre for k in chill_keywords)
+    is_chill_keyword = any(k in title.lower() for k in chill_keywords)
 
     if genre == favorite_genre or energy >= hype_min_energy or is_hype_keyword:
         return "Hype"
@@ -117,7 +117,7 @@ def compute_playlist_stats(playlists: PlaylistMap) -> Dict[str, object]:
     chill = playlists.get("Chill", [])
     mixed = playlists.get("Mixed", [])
 
-    total = len(hype)
+    total = len(all_songs)
     hype_ratio = len(hype) / total if total > 0 else 0.0
 
     avg_energy = 0.0
@@ -185,7 +185,11 @@ def lucky_pick(
     elif mode == "chill":
         songs = playlists.get("Chill", [])
     else:
-        songs = playlists.get("Hype", []) + playlists.get("Chill", [])
+    songs = (
+        playlists.get("Hype", [])
+        + playlists.get("Chill", [])
+        + playlists.get("Mixed", [])
+    )
 
     return random_choice_or_none(songs)
 
